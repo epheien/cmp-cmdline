@@ -133,6 +133,7 @@ local definitions = {
       --- create items.
       local items = {}
       local escaped = cmdline:gsub([[\\]], [[\\\\]]);
+      escaped = #escaped == 1 and '' or escaped
       for _, word_or_item in ipairs(vim.fn.getcompletion(escaped, 'cmdline')) do
         local word = type(word_or_item) == 'string' and word_or_item or word_or_item.word
         local item = { label = word }
