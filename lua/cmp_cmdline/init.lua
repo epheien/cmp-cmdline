@@ -134,7 +134,8 @@ local definitions = {
       local items = {}
       local escaped = cmdline:gsub([[\\]], [[\\\\]]);
       escaped = #escaped == 1 and '' or escaped
-      for _, word_or_item in ipairs(vim.fn.getcompletion(escaped, 'cmdline')) do
+      local ok, completion = pcall(vim.fn.getcompletion, escaped, 'cmdline')
+      for _, word_or_item in ipairs(ok and completion or {}) do
         local word = type(word_or_item) == 'string' and word_or_item or word_or_item.word
         local item = { label = word }
         table.insert(items, item)
