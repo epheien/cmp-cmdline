@@ -80,7 +80,7 @@ local definitions = {
     ctype = 'cmdline',
     regex = [=[[^[:blank:]]*$]=],
     kind = cmp.lsp.CompletionItemKind.Variable,
-    isIncomplete = false,
+    isIncomplete = true,
     ---@param option cmp-cmdline.Option
     exec = function(option, arglead, cmdline, force)
       -- Ignore range only cmdline. (e.g.: 4, '<,'>)
@@ -132,7 +132,7 @@ local definitions = {
 
       --- create items.
       local items = {}
-      local escaped = cmdline:gsub([[\\]], [[\\\\]]);
+      local escaped = cmdline:gsub([[\\]], [[\\\\]])
       escaped = #escaped == 1 and '' or escaped
       local ok, completion = pcall(vim.fn.getcompletion, escaped, 'cmdline')
       for _, word_or_item in ipairs(ok and completion or {}) do
@@ -191,6 +191,17 @@ source.get_trigger_characters = function()
 end
 
 source.complete = function(self, params, callback)
+  -- optimize for first command complete
+  if params.completion_context.pumvisible then
+    if vim.regex([=[^\h\w\+$]=]):match_str(params.context.cursor_before_line) then
+      callback({
+        isIncomplete = true,
+        items = self.items,
+      })
+      return
+    end
+  end
+
   local offset = 0
   local ctype = ''
   local items = {}
