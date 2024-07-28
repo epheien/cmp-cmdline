@@ -80,7 +80,7 @@ local definitions = {
     ctype = 'cmdline',
     regex = [=[[^[:blank:]]*$]=],
     kind = cmp.lsp.CompletionItemKind.Variable,
-    isIncomplete = true,
+    isIncomplete = false,
     ---@param option cmp-cmdline.Option
     exec = function(option, arglead, cmdline, force)
       -- Ignore range only cmdline. (e.g.: 4, '<,'>)
