@@ -228,6 +228,11 @@ source.complete = function(self, params, callback)
     end
   end
 
+  -- 首个命令行的补全是完整列表, 可优化性能
+  if vim.regex([=[^\h\w*$]=]):match_str(params.context.cursor_before_line) then
+    isIncomplete = false
+  end
+
   local labels = {}
   for _, item in ipairs(items) do
     item.kind = kind
