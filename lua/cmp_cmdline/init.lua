@@ -193,7 +193,7 @@ end
 source.complete = function(self, params, callback)
   -- optimize for first command complete
   -- NOTE: 主要卡的地方不是获取补全列表, 而是过滤/排序的过程, 可用 isIncomplete = false 优化
-  if params.completion_context.pumvisible then
+  if cmp.core.view:visible() or vim.fn.pumvisible() == 1 then
     --print('optimize', params.context.cursor_before_line)
     if vim.regex([=[^\h\w\+$]=]):match_str(params.context.cursor_before_line) then
       callback({
