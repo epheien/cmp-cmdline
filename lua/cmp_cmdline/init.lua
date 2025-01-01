@@ -134,10 +134,13 @@ local definitions = {
       local items = {}
       local escaped = cmdline:gsub([[\\]], [[\\\\]])
       escaped = #escaped == 1 and '' or escaped
+      local pat = vim.regex('^no')
+      local fix = (parsed.cmd == 'set' or parsed.cmd == 'setlocal' or parsed.cmd == 'setglobal') and
+          pat:match_str(arglead) or false
       local ok, completion = pcall(vim.fn.getcompletion, escaped, 'cmdline')
       for _, word_or_item in ipairs(ok and completion or {}) do
         local word = type(word_or_item) == 'string' and word_or_item or word_or_item.word
-        local item = { label = word }
+        local item = { label = (fix and not pat:match_str(word)) and 'no' .. word or word }
         table.insert(items, item)
         if is_option_name_completion and is_boolean_option(word) then
           table.insert(items, vim.tbl_deep_extend('force', {}, item, {
