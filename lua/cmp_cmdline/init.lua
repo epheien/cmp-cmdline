@@ -80,6 +80,12 @@ local definitions = {
     ctype = 'cmdline',
     regex = [=[[^[:blank:]]*$]=],
     kind = cmp.lsp.CompletionItemKind.Variable,
+    -- NOTE: isIncomplete 不能为 false 的原因是, 类似以下的 cases:
+    -- :b lazy/nvi|
+    -- 重新打字触发补全, 这时候再按 backspace 回退的话, 补全列表不会更新
+    -- 解决办法是, 先分词, 从当前词的开始端触发补全, 后面的词用作过滤
+    -- :h |
+    -- 这时候 getcompletion() 返回的列表并不完整, 需要重新获取
     isIncomplete = true,
     ---@param option cmp-cmdline.Option
     exec = function(option, arglead, cmdline, force)
